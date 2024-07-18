@@ -9,6 +9,8 @@ on:
 jobs:
   update-repo:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +32,6 @@ jobs:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          set -x  # Enable debug mode
           mkdir -p public/dists/stable/main/binary-arm64
           dpkg-scanpackages --arch arm64 packages > public/dists/stable/main/binary-arm64/Packages
           gzip -k -f public/dists/stable/main/binary-arm64/Packages
@@ -50,23 +51,11 @@ jobs:
           
           apt-ftparchive release . >> Release
           
-          # Debug information
-          pwd
-          ls -la
-          cat Release
-          gpg --list-secret-keys
-          
-          # GPG signing
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --default-key $GPG_KEY_ID --clearsign -o InRelease Release
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --default-key $GPG_KEY_ID -abs -o Release.gpg Release
-          
-          # More debug information
-          ls -la
-          cat InRelease || echo "InRelease file not created"
-          cat Release.gpg || echo "Release.gpg file not created"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
