@@ -12,21 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Import GPG key and setup gpg-agent
+      - name: Import GPG key and setup gpg
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --import --batch
           echo "allow-preset-passphrase" > ~/.gnupg/gpg-agent.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "no-tty" >> ~/.gnupg/gpg.conf
           gpg-connect-agent reloadagent /bye
-          echo "$GPG_PASSPHRASE" | /usr/lib/gnupg2/gpg-preset-passphrase --preset "${{ secrets.GPG_KEY_ID }}"
 
       - name: Generate Packages and Release files
         env:
-          GPG_TTY: /dev/null
+          GPG_TTY: $(tty)
           GNUPGHOME: /home/runner/.gnupg
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           set -x  # Enable debug mode
           mkdir -p public/dists/stable/main/binary-arm64
@@ -55,8 +57,8 @@ jobs:
           gpg --list-secret-keys
           
           # GPG signing
-          gpg --default-key $GPG_KEY_ID --clearsign --batch --yes -o InRelease Release
-          gpg --default-key $GPG_KEY_ID -abs --batch --yes -o Release.gpg Release
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --default-key $GPG_KEY_ID --clearsign -o InRelease Release
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --default-key $GPG_KEY_ID -abs -o Release.gpg Release
           
           # More debug information
           ls -la
