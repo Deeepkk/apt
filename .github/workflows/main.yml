@@ -1,6 +1,7 @@
 name: Update Debian Repository
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'packages/*.deb'
