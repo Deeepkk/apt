@@ -16,7 +16,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import --batch
+          echo "$GPG_PRIVATE_KEY" | gpg --import --batch --yes
 
       - name: Generate Packages and Release files
         run: |
@@ -38,9 +38,11 @@ jobs:
           EOF
           
           apt-ftparchive release . >> Release
-          gpg --clearsign -o InRelease Release
-          gpg -abs -o Release.gpg Release
-
+          echo "$GPG_PRIVATE_KEY" | gpg --clearsign --batch --yes -o InRelease Release
+          echo "$GPG_PRIVATE_KEY" | gpg -abs --batch --yes -o Release.gpg Release
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+     
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
