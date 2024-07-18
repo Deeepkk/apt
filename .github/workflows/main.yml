@@ -1,0 +1,48 @@
+name: Update Debian Repository
+
+on:
+  push:
+    paths:
+      - 'packages/*.deb'
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --import --batch
+
+      - name: Generate Packages and Release files
+        run: |
+          mkdir -p public/dists/stable/main/binary-arm64
+          dpkg-scanpackages --arch arm64 packages > public/dists/stable/main/binary-arm64/Packages
+          gzip -k -f public/dists/stable/main/binary-arm64/Packages
+          
+          cd public/dists/stable
+          
+          cat << EOF > Release
+          Origin: https://deeepkk.github.io/apt
+          Label: Droidian PKG
+          Suite: stable
+          Codename: stable
+          Version: 1.0
+          Architectures: arm64
+          Components: main
+          Description: Droidian Packages 
+          EOF
+          
+          apt-ftparchive release . >> Release
+          gpg --clearsign -o InRelease Release
+          gpg -abs -o Release.gpg Release
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          force_orphan: true
