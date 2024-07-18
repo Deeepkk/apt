@@ -20,9 +20,13 @@ jobs:
           echo "$GPG_PRIVATE_KEY" | gpg --import --batch
           echo "allow-preset-passphrase" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          /usr/lib/gnupg2/gpg-preset-passphrase --preset "${{ secrets.GPG_KEY_ID }}" <<< "$GPG_PASSPHRASE"
+          echo "$GPG_PASSPHRASE" | /usr/lib/gnupg2/gpg-preset-passphrase --preset "${{ secrets.GPG_KEY_ID }}"
 
       - name: Generate Packages and Release files
+        env:
+          GPG_TTY: /dev/null
+          GNUPGHOME: /home/runner/.gnupg
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -x  # Enable debug mode
           mkdir -p public/dists/stable/main/binary-arm64
@@ -48,20 +52,19 @@ jobs:
           pwd
           ls -la
           cat Release
+          gpg --list-secret-keys
           
           # GPG signing
-          gpg --clearsign --batch --yes -o InRelease Release
-          gpg -abs --batch --yes -o Release.gpg Release
+          gpg --default-key $GPG_KEY_ID --clearsign --batch --yes -o InRelease Release
+          gpg --default-key $GPG_KEY_ID -abs --batch --yes -o Release.gpg Release
           
           # More debug information
           ls -la
-          cat InRelease
-          cat Release.gpg
-        env:
-          GPG_TTY: /dev/null
+          cat InRelease || echo "InRelease file not created"
+          cat Release.gpg || echo "Release.gpg file not created"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
