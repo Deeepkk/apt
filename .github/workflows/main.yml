@@ -44,6 +44,9 @@ jobs:
           apt-ftparchive release . >> Release
           gpg --clearsign --batch --yes -o InRelease Release
           gpg -abs --batch --yes -o Release.gpg Release
+          
+          # Debug: List contents of current directory
+          ls -la
         env:
           GPG_TTY: $(tty)
 
