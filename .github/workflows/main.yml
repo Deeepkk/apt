@@ -24,6 +24,7 @@ jobs:
 
       - name: Generate Packages and Release files
         run: |
+          set -x  # Enable debug mode
           mkdir -p public/dists/stable/main/binary-arm64
           dpkg-scanpackages --arch arm64 packages > public/dists/stable/main/binary-arm64/Packages
           gzip -k -f public/dists/stable/main/binary-arm64/Packages
@@ -42,13 +43,22 @@ jobs:
           EOF
           
           apt-ftparchive release . >> Release
+          
+          # Debug information
+          pwd
+          ls -la
+          cat Release
+          
+          # GPG signing
           gpg --clearsign --batch --yes -o InRelease Release
           gpg -abs --batch --yes -o Release.gpg Release
           
-          # Debug: List contents of current directory
+          # More debug information
           ls -la
+          cat InRelease
+          cat Release.gpg
         env:
-          GPG_TTY: $(tty)
+          GPG_TTY: /dev/null
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
