@@ -12,11 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Import GPG key
+      - name: Import GPG key and setup gpg-agent
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --import --batch --yes
+          echo "$GPG_PRIVATE_KEY" | gpg --import --batch
+          echo "allow-preset-passphrase" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          /usr/lib/gnupg2/gpg-preset-passphrase --preset "${{ secrets.GPG_KEY_ID }}" <<< "$GPG_PASSPHRASE"
 
       - name: Generate Packages and Release files
         run: |
@@ -38,13 +42,13 @@ jobs:
           EOF
           
           apt-ftparchive release . >> Release
-          echo "$GPG_PRIVATE_KEY" | gpg --clearsign --batch --yes -o InRelease Release
-          echo "$GPG_PRIVATE_KEY" | gpg -abs --batch --yes -o Release.gpg Release
+          gpg --clearsign --batch --yes -o InRelease Release
+          gpg -abs --batch --yes -o Release.gpg Release
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-     
+          GPG_TTY: $(tty)
+
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
