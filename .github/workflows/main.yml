@@ -3,6 +3,8 @@ name: Update Debian Repository
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - 'packages/*.deb'
 
@@ -125,20 +127,18 @@ jobs:
                   <tr>
                     <th>Package Name</th>
                     <th>Version</th>
-                    <th>Download</th>
                   </tr>
                 </thead>
                 <tbody>
           EOF
           
           for package in packages/*.deb; do
-            package_name=$(dpkg-deb --info "$package" | grep " Package: " | awk '{print $2}')
-            package_version=$(dpkg-deb --info "$package" | grep " Version: " | awk '{print $2}')
-            echo "                  <tr>" >> public/index.html
-            echo "                    <td>$package_name</td>" >> public/index.html
-            echo "                    <td>$package_version</td>" >> public/index.html
-            echo "                    <td><a href=\"packages/$(basename $package)\">Download</a></td>" >> public/index.html
-            echo "                  </tr>" >> public/index.html
+          package_name=$(dpkg-deb --info "$package" | grep " Package: " | awk '{print $2}')
+          package_version=$(dpkg-deb --info "$package" | grep " Version: " | awk '{print $2}')
+          echo "              <tr>" >> public/index.html
+          echo "                <td><a href=\"packages/$(basename $package)\">$package_name</a></td>" >> public/index.html
+          echo "                <td>$package_version</td>" >> public/index.html
+          echo "              </tr>" >> public/index.html
           done
 
           cat << 'EOF' >> public/index.html
@@ -156,7 +156,7 @@ jobs:
         run: mv packages public/packages
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
