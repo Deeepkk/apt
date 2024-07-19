@@ -88,21 +88,17 @@ jobs:
                 overflow-x: auto;
                 display: block;
               }
-              thead, tbody {
-              display: block;
-              width: 100%;
-              }
               th, td {
                 padding: 15px;
                 text-align: left;
                 border-bottom: 1px solid #2e2e2e;
                 white-space: nowrap;
               }
-              thead, th {
+              th {
                 background-color: #1e1e1e;
                 font-weight: 400;
               }
-              tbody, tr:nth-child(even) {
+              tr:nth-child(even) {
                 background-color: #1a1a1a;
               }
               a {
