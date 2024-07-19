@@ -88,7 +88,6 @@ jobs:
                 border-collapse: collapse;
                 margin-top: 20px;
                 overflow-x: auto;
-                display: block;
               }
               th, td {
                 padding: 15px;
