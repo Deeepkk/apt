@@ -1,0 +1,35 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Origin: https://deeepkk.github.io/apt
+Label: Droidian PKG
+Suite: stable
+Codename: stable
+Version: 1.0
+Architectures: arm64
+Components: main
+Description: Droidian Packages 
+Date: Thu, 25 Jul 2024 15:56:43 +0000
+MD5Sum:
+ 52c4a381d9b993acec57390ae4bd1b5d              210 Release
+ ed74cf3bea4f85779ca168aa858b96bb             7326 main/binary-arm64/Packages
+ 2a8038e7b74562ac8ea834dc03c8885a             2197 main/binary-arm64/Packages.gz
+SHA1:
+ 624f5d41efc0380c47da3cdc872b189db891c54f              210 Release
+ 78171f4996d8f76e9809d1226c99e27031b761e6             7326 main/binary-arm64/Packages
+ 3417f51737aaf7b34e51f019cc9df756fe8a803c             2197 main/binary-arm64/Packages.gz
+SHA256:
+ 4ba6450561a7b47cf6e1a57eff9c2cf8bce267d40ffb6eaf99399c5274846402              210 Release
+ 7d7ba7b373fd30d622435aff3090c97d6f4d5188f94783ebecfc61b1579efaac             7326 main/binary-arm64/Packages
+ addc8594b189b9cc29f71b4f9944da99c4ff2736c3ff5f41c03501aa6d842495             2197 main/binary-arm64/Packages.gz
+SHA512:
+ 5853fbff8a7596a91eba145f01388cc70521a553fb21726cf79175381b74bb68528c195b23fdb5b5fa75d2e7fffa27d714b34e5712faa671704a1680597cdfdf              210 Release
+ 8f7ca2e5da0958d2cd9ad9ccd8e511a08bb16ce0e3d7fc362a8c09ec58ce20485a56e01cd8a8e84c333a025daeff06aff797ade25c32917c752af5d42c049e2e             7326 main/binary-arm64/Packages
+ 53f6d045584e1411c3ae8dffb6b444c673685a18ba176f59ad76aba929a0174bfac0fedc51e3c4e4536f6cf3af55b6ec5820b47fc62daab6f10e74df0743b9a6             2197 main/binary-arm64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYIAB0WIQRNcQaieP3hdUsB6xaAeHTviKAJuQUCZqJ1uwAKCRCAeHTviKAJ
+ucWnAQCHjU3nsZjMv0JBDhBPU4aQtNp9r/eVQ70qrvIU+K8vbQD/ffAPaylguGXy
+AOwlGh1+TuTw19vK+44wcZLBWri+PAA=
+=nLr4
+-----END PGP SIGNATURE-----
